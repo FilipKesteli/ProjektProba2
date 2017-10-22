@@ -27,10 +27,10 @@ public class IntroActivity extends AppIntro2 {
 
         // Instead of fragments, you can also use our default slide
         // Just set a title, description, background and image. AppIntro will do the rest.
-        addSlide(AppIntroFragment.newInstance("DETECTIO", "The best and cheapest reliable lie detector", R.drawable.ic_launcher_background, getResources().getColor(R.color.red_300)));
-        addSlide(AppIntroFragment.newInstance("Become a Professional Investigator", "Help the world to become a better place and find liers among us - every investigation - Investigator point", R.drawable.ic_launcher_background, getResources().getColor(R.color.red_300)));
-        addSlide(AppIntroFragment.newInstance("Become a Detectio ambasador", "Give us a feedback trough our forum - every publication - Ambasador point", R.drawable.ic_launcher_background, getResources().getColor(R.color.red_300)));
-        addSlide(AppIntroFragment.newInstance("Become a Hero", "Help your society to become a better place - Become an ambassador of the better world. Motivate people to stop lieing - every person one Hero point", R.drawable.ic_launcher_background, getResources().getColor(R.color.red_300)));
+        addSlide(AppIntroFragment.newInstance("DETECTIO", "The best and cheapest reliable lie detector", R.drawable.x1, getResources().getColor(R.color.red_300)));
+        addSlide(AppIntroFragment.newInstance("Become a Professional Investigator", "Help the world to become a better place and find liers among us - every investigation - Investigator point", R.drawable.x1, getResources().getColor(R.color.red_300)));
+        addSlide(AppIntroFragment.newInstance("Become a Detectio ambasador", "Give us a feedback trough our forum - every publication - Ambasador point", R.drawable.x1, getResources().getColor(R.color.red_300)));
+        addSlide(AppIntroFragment.newInstance("Become a Hero", "Help your society to become a better place - Become an ambassador of the better world. Motivate people to stop lieing - every person one Hero point", R.drawable.x1, getResources().getColor(R.color.red_300)));
 
         // OPTIONAL METHODS
         // Override bar/separator color.

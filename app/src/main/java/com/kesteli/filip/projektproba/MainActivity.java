@@ -42,9 +42,11 @@ import com.choosemuse.libmuse.MuseManagerAndroid;
 import com.choosemuse.libmuse.MuseVersion;
 import com.choosemuse.libmuse.Result;
 import com.choosemuse.libmuse.ResultLevel;
+import com.hsalf.smilerating.SmileRating;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -70,6 +72,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * 8. To disconnect from the headband, press "Disconnect"
  */
 public class MainActivity extends Activity implements View.OnClickListener {
+
+    private SmileRating smileRating;
 
     /**
      * Tag used for logging purposes.
@@ -121,6 +125,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
      * MuseDataPacketType, which specify 3 values for accelerometer and 6
      * values for EEG and EEG-derived packets.
      */
+    private List<Double> eegHack = new ArrayList<>();
+    private double trigger;
+
     private final double[] eegBuffer = new double[6];
     private boolean eegStale;
     private final double[] alphaBuffer = new double[6];
@@ -202,6 +209,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         // Start our asynchronous updates of the UI.
         handler.post(tickUi);
+
     }
 
     protected void onPause() {
@@ -480,6 +488,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         disconnectButton.setOnClickListener(this);
         Button pauseButton = (Button) findViewById(R.id.pause);
         pauseButton.setOnClickListener(this);
+        Button btnNewCase = (Button) findViewById(R.id.btnNewCase);
+//        btnNewCase.setOnClickListener(this);
+        smileRating = (SmileRating) findViewById(R.id.smileyRating1);
 
         spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
         Spinner musesSpinner = (Spinner) findViewById(R.id.muses_spinner);
@@ -508,8 +519,57 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 updateAlpha();
             }
             handler.postDelayed(tickUi, 1000 / 60);
+            smilesMethod();
         }
     };
+
+    private void smilesMethod() {
+        List<Double> holderSmiley = new ArrayList<>();
+        double min = 0;
+        double max = 100;
+        if (holderSmiley.size() > 51) {
+            for (int i = holderSmiley.size() - 1; i >= holderSmiley.size() - 50; i--) { // could have used i, doesn't matter.
+                holderSmiley.add(eegHack.get(i));
+            }
+        } else {
+            for (int i = holderSmiley.size() - 1; i >= 0; i--) { // could have used i, doesn't matter.
+                holderSmiley.add(eegHack.get(i));
+            }
+        }
+        if (holderSmiley.size() > 0) {
+            min = holderSmiley.get(holderSmiley.size() - 1);
+            max = holderSmiley.get(holderSmiley.size() - 1);
+        }
+        for (double i : holderSmiley) {
+            min = min < i ? min : i;
+        }
+        for (
+                double i : holderSmiley)
+
+        {
+            max = max > i ? max : i;
+        }
+
+        double ourTrigger = max - min;
+        if (ourTrigger < 100)
+
+        {
+            smileRating.setSelectedSmile(SmileRating.GREAT);
+        } else if (ourTrigger < 200)
+
+        {
+            smileRating.setSelectedSmile(SmileRating.GOOD);
+        } else if (ourTrigger < 300)
+
+        {
+            smileRating.setSelectedSmile(SmileRating.OKAY);
+        } else if (ourTrigger < 400) {
+            smileRating.setSelectedSmile(SmileRating.BAD);
+        } else {
+            smileRating.setSelectedSmile(SmileRating.TERRIBLE);
+        }
+    }
+
 
     /**
      * The following methods update the TextViews in the UI with the data
@@ -529,6 +589,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         TextView fp1 = (TextView) findViewById(R.id.eeg_af7);
         TextView fp2 = (TextView) findViewById(R.id.eeg_af8);
         TextView tp10 = (TextView) findViewById(R.id.eeg_tp10);
+        eegHack.add(eegBuffer[0]);
         tp9.setText(String.format("%6.2f", eegBuffer[0]));
         fp1.setText(String.format("%6.2f", eegBuffer[1]));
         fp2.setText(String.format("%6.2f", eegBuffer[2]));
@@ -682,10 +743,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     //--------------------------------------
-    // Listener translators
-    //
-    // Each of these classes extend from the appropriate listener and contain a weak reference
-    // to the activity.  Each class simply forwards the messages it receives back to the Activity.
+// Listener translators
+//
+// Each of these classes extend from the appropriate listener and contain a weak reference
+// to the activity.  Each class simply forwards the messages it receives back to the Activity.
     class MuseL extends MuseListener {
         final WeakReference<MainActivity> activityRef;
 
